@@ -3,6 +3,8 @@ import numpy as np
 from sklearn.cluster import DBSCAN
 import os
 from datetime import datetime
+import pathlib
+import shutil
 
 def filter_close_corners(corners, min_distance=30):
     if not corners:
@@ -87,6 +89,7 @@ def split_into_grid(img, pdt, pdb, pdl, pdr):
             cells.append(cell)
     return cells
 
+dir_list = []
 def save_to_dir(images, base_dir="split_cells/run_"):
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     dir_name = f"{base_dir}{timestamp}"
@@ -95,12 +98,38 @@ def save_to_dir(images, base_dir="split_cells/run_"):
     x_labels = [chr(i) for i in range(ord('A'), ord('O') + 1)]
     y_labels = [str(i) for i in range(1, 16)]
 
+    all_files = []
     for i, img in enumerate(images):
         x_coord = x_labels[i % 15]
         y_coord = y_labels[i // 15]
         filename = os.path.join(dir_name, f"cell_{x_coord}{y_coord}.png")
+        all_files.append(filename)
         cv2.imwrite(filename, img)
         print(f"Saved {filename}")
+    
+    #checks two cells for if they are exactly the same which they are if cropping fails
+    first_img = cv2.imread(all_files[0])
+    second_img = cv2.imread(all_files[1])
+    difference = cv2.subtract(first_img,second_img)
+    b,g,r = cv2.split(difference)
+
+    #deletes the bad cropping 
+    if cv2.countNonZero(b) == 0 and cv2.countNonZero(g) == 0 and cv2.countNonZero(r) == 0:
+        print(f"Error cropping {all_files[0]}")
+        print(f"Deleting bad directory: {dir_name}")
+        shutil.rmtree(dir_name)
+    else:
+        dir_list.append(dir_name)
+        print(f"Cropping Successful")
+
+def test_data_folder():
+    destination = "split_cells/test_data"
+    shutil.move(dir_list[0],destination)
+    
+    
+
+    
+
 
 # img = cv2.imread('./data/test_cropped.png')
 # img = cv2.imread('./data/test_empty.png')
@@ -220,14 +249,19 @@ pdb = 28
 pdl = 28
 pdr = 28
 
-# this is the image here   vvvvvvv   which is going to be split
-cropped = crop_img("./data/fs1.png")
-cells = split_into_grid(cropped, pdt, pdb, pdl, pdr)
-save_to_dir(cells)
 
 # previews of a select few split images
-cv2.imshow('Cell A1 (tl corner)', cells[0])
-cv2.imshow('Cell G8 (center)', cells[7 * 15 + 7])
-cv2.imshow('Cell O15 (br corner)', cells[14 * 15 + 14])
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# def demo():
+#     cv2.imshow('Cell A1 (tl corner)', cells[0])
+#     cv2.imshow('Cell G8 (center)', cells[7 * 15 + 7])
+#     cv2.imshow('Cell O15 (br corner)', cells[14 * 15 + 14])
+#     cv2.waitKey(0)
+#     cv2.destroyAllWindows()
+    
+# this is the image here   vvvvvvv   which is going to be split
+def run_cropper(filepath):
+    cropped = crop_img(filepath)
+    cells = split_into_grid(cropped, pdt, pdb, pdl, pdr)
+    save_to_dir(cells)
+    
+#run_cropper("./data/19-1.png")
