@@ -5,7 +5,7 @@ Run `pip install -r requirements.txt` to install requisite dependencies. I'm usi
 ## Structure
 **data:** holds several preview images that I tested on. Use only 19-1 to 19-4 or fs-1 and fs-3. The rest of the images we are not testing on, and if you need more, grab it from [here](https://www.youtube.com/watch?v=CS7n-n8Hn3E&t=8s).
 
-**split_cells**: this is a dir that will hold many sub-dirs that themselves will contain ALL of the split images are from a given run of `cropper.py`.
+**split_cells**: this is a dir that will hold many sub-dirs that themselves will contain ALL of the split images are from a given run of `cropper.py`.  
 
 **cropper.py**: this is the main file I'm currently using to run everything. It contains methods to: load in a screenshot of a board, detect the corners, crop the image, and write all of the split cells into a sub-dir in `split_cells`. 
 

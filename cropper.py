@@ -122,13 +122,8 @@ def save_to_dir(images, base_dir="split_cells/run_"):
         dir_list.append(dir_name)
         print(f"Cropping Successful")
 
-def test_data_folder():
-    destination = "split_cells/test_data"
-    shutil.move(dir_list[0],destination)
-    
     
 
-    
 
 
 # img = cv2.imread('./data/test_cropped.png')
@@ -210,9 +205,9 @@ def crop_img(fpath):
     else:
         print("not enough clus to find corners")
 
-    cv2.imshow('corners', img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # cv2.imshow('corners', img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
     corners = np.array(final_corners)
 
@@ -236,9 +231,9 @@ def crop_img(fpath):
     M = cv2.getPerspectiveTransform(ordered_corners,dest)
     warped = cv2.warpPerspective(img,M,(maxWidth,maxHeight))
 
-    cv2.imshow('cropped',warped)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # cv2.imshow('cropped',warped)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
     return warped
 
@@ -260,8 +255,7 @@ pdr = 28
     
 # this is the image here   vvvvvvv   which is going to be split
 def run_cropper(filepath):
+
     cropped = crop_img(filepath)
     cells = split_into_grid(cropped, pdt, pdb, pdl, pdr)
     save_to_dir(cells)
-    
-#run_cropper("./data/19-1.png")
